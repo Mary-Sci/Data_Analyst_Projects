@@ -1,0 +1,50 @@
+--------------------TIME SENSITIVE REAL INTERVIEW QUESTIONS--------------------------------------
+--1. How many rows in the sales dataset?
+select
+	count(*)
+from sales;
+--2. How many columns in the sales dataset?
+SELECT
+	COUNT(*)
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'sales'
+--3. What is the total number of sellers?
+select
+	count(distinct seller_id)
+from sales;
+--4. What is the total value of sales in EUR?
+select date from currency
+update currency
+set[date] = convert(date,date)
+update sales
+set[date] = convert(date,date)
+select sum(cast(price as float)/cast(rate as float))
+from sales A, currency B
+where A.currency = B.currency
+AND A.date = B.date
+--5. Which brand has the highest number of purchases during the period?
+with T1 as
+(
+select
+	brand,
+	COUNT(price) as tot_num
+from sales
+group by brand
+except
+select
+	brand,
+	COUNT(price) as tot_num
+from sales
+where brand = ''
+group by brand
+)
+select
+	top 1 brand,
+	tot_num
+from T1
+order by tot_num desc
+--6. How many items in the “Jewellery” category have no brand associated with them?
+select
+	COUNT(distinct product_code)
+from sales
+where category = 'Jewellery' and brand = ''
